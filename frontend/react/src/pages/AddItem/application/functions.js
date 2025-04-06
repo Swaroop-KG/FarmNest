@@ -1,38 +1,19 @@
 import { toast } from 'react-toastify';
 import axios from 'axios';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 // import Compressor from 'compressorjs';
 
 /**
- *  Uploads a file to Firebase Storage
+ * Uploads a file to Cloudinary
  * @param {File} file
  * @returns {Promise<string?>} url
  */
 export async function handleUpload(file) {
   if (!file) {
     alert('Please choose a file first!');
+    return null;
   }
-  // Initialize Firebase
-  const { initializeApp } = await import('firebase/app');
-  const { getStorage } = await import('firebase/storage');
 
-  const app = initializeApp({
-    apiKey: import.meta.env.VITE_API_KEY,
-    authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_APP_ID,
-    measurementId: import.meta.env.VITE_MEASUREMENT_ID
-  });
-
-  const storage = getStorage(app);
-
-  const _id = uuidv4();
-  const extension = file.name.split('.').pop();
-
-  const storageRef = ref(storage, `/files/${_id + extension}`);
   const compressedImage = await compressImage(file);
 
   if (!compressedImage) {
@@ -40,19 +21,20 @@ export async function handleUpload(file) {
     return null;
   }
 
-  const uploadTask = uploadBytesResumable(storageRef, compressedImage);
+  const formData = new FormData();
+  formData.append('file', compressedImage);
+  formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET); // Cloudinary unsigned preset
+  formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
 
   try {
-    // Wait for the upload task to complete
-    await new Promise((resolve, reject) => {
-      uploadTask.on('state_changed', null, reject, () => resolve());
-    });
+    const res = await axios.post(
+      `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+      formData
+    );
 
-    // Get the download URL
-    const url = await getDownloadURL(uploadTask.snapshot.ref);
-    return url;
+    return res.data.secure_url;
   } catch (error) {
-    console.error(error);
+    console.error('Cloudinary Upload Error:', error);
     return null;
   }
 }
@@ -65,15 +47,18 @@ export async function handleUpload(file) {
  * @param {string} data.description - The description of the item.
  * @param {string} data.price - The price of the item.
  * @param {string} data.file - The file of the item.
-
  * @returns {Promise<boolean>} true if successful, false otherwise
  */
-
 export async function addItem(data) {
   const { listedBy, name, description, price, file } = data;
 
   try {
     const img = await handleUpload(file);
+
+    if (!img) {
+      toast.error('Image upload failed');
+      return false;
+    }
 
     const res = await axios.post(import.meta.env.VITE_API_URL + '/list/addItem', {
       listedBy,

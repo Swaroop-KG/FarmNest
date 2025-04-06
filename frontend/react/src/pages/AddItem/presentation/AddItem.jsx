@@ -82,7 +82,7 @@ const AddItem = () => {
     if (res) {
       // add this data to the cache (react query)
       queryClient.setQueryData(['items'], (oldData) => {
-        return [newData, ...oldData];
+        return [newData, ...(oldData || [])];
       });
       navigate('/shop');
     }

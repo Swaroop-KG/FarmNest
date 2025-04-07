@@ -1,7 +1,7 @@
-const mongoose = require('mongoose')
-const Joi = require('joi')
-const JoiObjectId = require('joi-objectid')(Joi)
-const { commentSchema } = require('./comment')
+const mongoose = require('mongoose');
+const Joi = require('joi');
+const JoiObjectId = require('joi-objectid')(Joi);
+const { commentSchema } = require('./comment');
 
 const milletItemSchema = new mongoose.Schema({
   listedBy: {
@@ -26,29 +26,34 @@ const milletItemSchema = new mongoose.Schema({
     required: true,
     min: 0
   },
+  category: {
+    type: String,
+    enum: ['vegetable', 'fruit', 'plant'], // ✅ Enforcing valid categories
+    required: true
+  },
   listedAt: {
     type: Date,
-    default: () => {
-      return new Date()
-    }
+    default: () => new Date()
   },
   comments: [commentSchema]
-})
+});
 
-const MilletItem = mongoose.model('MilletItem', milletItemSchema)
+const MilletItem = mongoose.model('MilletItem', milletItemSchema);
 
-function validateMilletItem (item) {
-  const schema = Joi.object().keys({
+function validateMilletItem(item) {
+  const schema = Joi.object({
     listedBy: JoiObjectId().required(),
     name: Joi.string().required(),
     description: Joi.string().required(),
     images: Joi.array().items(Joi.string()).required(),
-    comments: Joi.array(),
-    price: Joi.number().required()
-  })
-  return schema.validate(item)
+    price: Joi.number().required(),
+    category: Joi.string().valid('vegetable', 'fruit', 'plant').required(), // ✅ Validate category
+    comments: Joi.array()
+  });
+
+  return schema.validate(item);
 }
 
-exports.MilletItem = MilletItem
-exports.validateMilletItem = validateMilletItem
-exports.milletItemSchema = milletItemSchema
+exports.MilletItem = MilletItem;
+exports.validateMilletItem = validateMilletItem;
+exports.milletItemSchema = milletItemSchema;

@@ -20,12 +20,12 @@ function Shop() {
 
   const queryClient = useQueryClient();
 
-  const { isLoading, isError, error, data } = useQuery({
-    queryKey: ['items'],
-    queryFn: () => getItems(searchParams.get('sort') || '0')
-  });
+  const [urlFilter, setUrlFilter] = useState(parseInt(searchParams.get('sort')) || 0);
 
-  const [urlFilter, setUrlFilter] = useState(parseInt(searchParams.get('sort')) || '0');
+  const { isLoading, isError, error, data } = useQuery({
+    queryKey: ['items', urlFilter],
+    queryFn: () => getItems(urlFilter.toString())
+  });
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -60,31 +60,29 @@ function Shop() {
 
         {isLoading ? (
           <section className="w-full bg-white min-h-screen mb-8">
-            <div className=" w-[100%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-              {[1, 2, 3, 4, 5, 6].map((e) => {
-                return <ShimmerShopItem key={e} id={e} />;
-              })}
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+              {[1, 2, 3, 4, 5, 6].map((e) => (
+                <ShimmerShopItem key={e} id={e} />
+              ))}
             </div>
           </section>
         ) : (
-          <section className="w-[100%] min-h-screen">
-            <div className=" w-[100%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+          <section className="w-full min-h-screen">
+            <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
               {data &&
-                data.map((e) => {
-                  return (
-                    <ShopItem
-                      key={e._id}
-                      itemCount={0} //TODO: fix this behaviour
-                      itemId={e._id}
-                      isCart={false}
-                      onDelete={(item) => {
-                        queryClient.setQueryData(['items'], (prevData) => {
-                          return prevData.filter((i) => i._id !== item._id);
-                        });
-                      }}
-                    />
-                  );
-                })}
+                data.map((e) => (
+                  <ShopItem
+                    key={e._id}
+                    itemCount={0} // TODO: fix this behavior
+                    itemId={e._id}
+                    isCart={false}
+                    onDelete={(item) => {
+                      queryClient.setQueryData(['items', urlFilter], (prevData) => {
+                        return prevData.filter((i) => i._id !== item._id);
+                      });
+                    }}
+                  />
+                ))}
             </div>
           </section>
         )}
@@ -93,12 +91,9 @@ function Shop() {
   );
 
   function updateFilter(value) {
-    // Manually update the cache, in case of a sort mode change
-    queryClient.setQueryData(['items'], (prevData) => {
-      return sortList(prevData, value);
-    });
     navigate(`?sort=${value}`);
     setUrlFilter(value);
+    queryClient.invalidateQueries(['items']);
   }
 }
 
@@ -113,43 +108,42 @@ function getShopHeading() {
  * Build the Filter Dropdown
  * @param {object} props
  * @param {number} props.filter
- * @param {(string)=>void} props.updateFilter
+ * @param {(number)=>void} props.updateFilter
  * @returns
  */
 const Filter = ({ filter, updateFilter }) => {
   return (
     <details className="dropdown dropdown-end">
       <summary className="m-1 btn">
-        {options[filter].label}
+        {options[filter] ? options[filter].label : 'Filter'}
         <ChevronDown />
       </summary>
       <ul className="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
-        {options.map((e, i) => {
-          return (
-            <li key={i} onClick={() => updateFilter(e.value)}>
-              <option className="border-none" key={i} value={e.value}>
-                {e.label}
-              </option>
-            </li>
-          );
-        })}
+        {options.map((e, i) => (
+          <li key={i} onClick={() => updateFilter(e.value)}>
+            <option className="border-none" value={e.value}>
+              {e.label}
+            </option>
+          </li>
+        ))}
       </ul>
     </details>
   );
 };
 
 Filter.propTypes = {
-  filter: PropTypes.string.isRequired,
+  filter: PropTypes.number.isRequired,
   updateFilter: PropTypes.func.isRequired
 };
 
 const options = [
-  { value: '0', label: 'Latest' },
-  { value: '1', label: 'Oldest' },
-  { value: '2', label: 'A-Z' },
-  { value: '3', label: 'Z-A' },
-  { value: '4', label: 'Price: Low to High' },
-  { value: '5', label: 'Price: High to Low' }
+  { value: 0, label: 'Latest' },
+  { value: 1, label: 'Oldest' },
+  { value: 4, label: 'Price: Low to High' },
+  { value: 5, label: 'Price: High to Low' },
+  { value: 6, label: 'Vegetable' },
+  { value: 7, label: 'Fruit' },
+  { value: 8, label: 'Plant' }
 ];
 
 export default Shop;

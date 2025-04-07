@@ -1,7 +1,6 @@
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-// import Compressor from 'compressorjs';
 
 /**
  * Uploads a file to Cloudinary
@@ -23,7 +22,7 @@ export async function handleUpload(file) {
 
   const formData = new FormData();
   formData.append('file', compressedImage);
-  formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET); // Cloudinary unsigned preset
+  formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
   formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
 
   try {
@@ -46,11 +45,12 @@ export async function handleUpload(file) {
  * @param {string} data.name - The name of the item.
  * @param {string} data.description - The description of the item.
  * @param {string} data.price - The price of the item.
- * @param {string} data.file - The file of the item.
+ * @param {string} data.file - The image file.
+ * @param {string} data.category - The category of the item (vegetable, fruit, plant).
  * @returns {Promise<boolean>} true if successful, false otherwise
  */
 export async function addItem(data) {
-  const { listedBy, name, description, price, file } = data;
+  const { listedBy, name, description, price, file, category } = data;
 
   try {
     const img = await handleUpload(file);
@@ -64,6 +64,7 @@ export async function addItem(data) {
       listedBy,
       name,
       description,
+      category, // ✅ Include category
       images: [img],
       price,
       comments: []
@@ -83,12 +84,16 @@ export async function addItem(data) {
   }
 }
 
+/**
+ * Compresses an image using CompressorJS
+ * @param {File} file
+ * @returns {Promise<File | undefined>} Compressed image
+ */
 async function compressImage(file) {
   const Compressor = (await import('compressorjs')).default;
 
-  let compressedImage = undefined;
   try {
-    compressedImage = await new Promise((resolve, reject) => {
+    const compressedImage = await new Promise((resolve, reject) => {
       new Compressor(file, {
         quality: 0.6,
         height: 400,
@@ -97,9 +102,10 @@ async function compressImage(file) {
         error: reject
       });
     });
-  } catch (error) {
-    console.error(error);
-  }
 
-  return compressedImage;
+    return compressedImage;
+  } catch (error) {
+    console.error('Compression error:', error);
+    return undefined;
+  }
 }

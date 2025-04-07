@@ -1,5 +1,5 @@
-const mongoose = require('mongoose')
-const Joi = require('joi')
+const mongoose = require('mongoose');
+const Joi = require('joi');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: () => {
-      return new Date()
+      return new Date();
     }
   },
   images: {
@@ -48,11 +48,13 @@ const userSchema = new mongoose.Schema({
       type: [Number]
     }
   }
-})
+});
 
-const User = mongoose.model('User', userSchema)
+// ✅ Prevent OverwriteModelError
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 
-function validateUser (user) {
+// All Joi validators remain same
+function validateUser(user) {
   const schema = Joi.object().keys({
     name: Joi.string().required(),
     email: Joi.string().required().email(),
@@ -64,19 +66,19 @@ function validateUser (user) {
         coordinates: Joi.array().items(Joi.number()).required()
       })
       .required()
-  })
-  return schema.validate(user)
+  });
+  return schema.validate(user);
 }
 
-function validateLogin (req) {
+function validateLogin(req) {
   const schema = Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required()
-  })
-  return schema.validate(req)
+  });
+  return schema.validate(req);
 }
 
-function validateSignUp (req) {
+function validateSignUp(req) {
   const schema = Joi.object().keys({
     name: Joi.string().required(),
     email: Joi.string().required().email(),
@@ -89,21 +91,21 @@ function validateSignUp (req) {
         coordinates: Joi.array().items(Joi.number()).required()
       })
       .required()
-  })
-  return schema.validate(req)
+  });
+  return schema.validate(req);
 }
 
-function validateGLogin (req) {
+function validateGLogin(req) {
   const schema = Joi.object().keys({
     name: Joi.string().required(),
     email: Joi.string().required().email()
-  })
+  });
 
-  return schema.validate(req)
+  return schema.validate(req);
 }
 
-exports.User = User
-exports.validate = validateUser
-exports.validateLogin = validateLogin
-exports.validateSignUp = validateSignUp
-exports.validateGLogin = validateGLogin
+exports.User = User;
+exports.validate = validateUser;
+exports.validateLogin = validateLogin;
+exports.validateSignUp = validateSignUp;
+exports.validateGLogin = validateGLogin;

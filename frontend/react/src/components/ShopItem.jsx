@@ -83,6 +83,10 @@ function ShopItem({ itemId, itemCount = 1, isCart = false, onDelete }) {
     );
   }
   const { item, user: lister } = data;
+  const getRandomDiscount = () => {
+    return Math.floor(Math.random() * 46) + 5; // generates 5 to 50
+  };
+  
 
   return (
     <>
@@ -110,10 +114,10 @@ function ShopItem({ itemId, itemCount = 1, isCart = false, onDelete }) {
               />
             </div>
             {!isCart && (
-              <div className="absolute top-0 left-0 px-4 py-2 text-xs text-white shadow-lg bg-accentColor rounded-tl-md rounded-br-md">
-                23% off
-              </div>
-            )}
+  <div className="absolute top-0 left-0 px-4 py-2 text-xs text-white shadow-lg bg-accentColor rounded-tl-md rounded-br-md">
+    {getRandomDiscount()}% off
+  </div>
+)}
           </div>
 
           <div className="bg-gray-200 inline-flex flex-row mx-2 items-center justify-start px-3 gap-3 py-1 rounded-[5px] text-xs ">

@@ -67,6 +67,9 @@ function ItemDetail() {
     );
   }
   const { item, user: lister } = data;
+  if (!item || !lister || !item._id || !lister._id) {
+    return <div className="p-200">Loading...</div>;
+  }
   return (
     <>
       <main className="px-[10vw] pt-[8vh]">

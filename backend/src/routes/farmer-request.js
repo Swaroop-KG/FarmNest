@@ -4,16 +4,16 @@ const Notification = require('../models/Notification');
 
 router.post('/', async (req, res) => {
   try {
-    const { itemName, category, userId } = req.body;
+    const { itemName, userName, category } = req.body;
 
-    if (!itemName || !category || !userId) {
+    if (!itemName || !category || !userName) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
     const newNotification = new Notification({
       itemName,
       category,
-      userId,
+      userName,
       date: new Date() // 👈 This ensures the current date is saved
     });
 
@@ -23,6 +23,15 @@ router.post('/', async (req, res) => {
   } catch (err) {
     console.error('Error saving request:', err);
     res.status(500).json({ message: 'Server error. Could not send request.' });
+  }
+});
+router.get('/', async (req, res) => {
+  try {
+    const notifications = await Notification.find();
+    res.status(200).json(notifications);
+  } catch (err) {
+    console.error('Error fetching notifications:', err);
+    res.status(500).json({ message: 'Server error. Could not fetch notifications.' });
   }
 });
 

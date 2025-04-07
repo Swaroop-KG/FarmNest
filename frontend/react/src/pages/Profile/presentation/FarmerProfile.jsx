@@ -120,7 +120,7 @@ function FarmProfile() {
         </section>
 
         <section className="w-full">
-          <h1 className="mb-5 mx-20">Farm Items</h1>
+          <h1 className="mb-5 mx-20">Farm Items </h1>
           <section className="w-[100%] min-h-screen">
             <div className="px-20 w-[100%] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
               {farmItems &&
@@ -141,6 +141,7 @@ function FarmProfile() {
             </div>
           </section>
         </section>
+  
       </main>
     </>
   );

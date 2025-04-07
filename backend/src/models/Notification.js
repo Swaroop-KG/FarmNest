@@ -5,7 +5,7 @@ const NotificationSchema = new mongoose.Schema({
   message: String, // optional
   itemName: String,
   category: String,
-  userId: String,
+  userName: String,
   date: {
     type: Date,
     default: Date.now

@@ -20,6 +20,7 @@ function CartPage() {
   const queryClient = useQueryClient();
 
   const [itemName, setItemName] = useState('');
+  const[userName,setUserName]=useState('');
   const [category, setCategory] = useState('Vegetable');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,16 +33,23 @@ function CartPage() {
     if (!itemName.trim()) {
       setMessage('⚠️ Please enter an item name.');
       return;
+    } if (!userName.trim()) {
+      setMessage('⚠️ Please enter an user name.');
+      return;
     }
+
 
     setLoading(true);
     setMessage('');
 
     try {
+     
+      
       const res = await fetch('http://localhost:3000/api/farmer-request', {
+        
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ itemName, category, userId: 'user123' }) // TODO: Replace with actual userId
+        body: JSON.stringify({ itemName,  userName,category }) // TODO: Replace with actual userId
       });
 
       let data;
@@ -59,6 +67,7 @@ function CartPage() {
         setMessage(data.message || '❌ Failed to send request.');
       }
     } catch (err) {
+      console.log(err)
       setMessage('❌ Request failed. Please try again.');
     } finally {
       setLoading(false);
@@ -132,6 +141,13 @@ function CartPage() {
               onChange={(e) => setItemName(e.target.value)}
               className="border p-2 rounded"
             />
+            <input
+            type="text"
+            placeholder="Enter username "
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            className="border p-2 rounded"
+          />
 
             <select
               value={category}

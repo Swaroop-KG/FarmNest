@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
   },
   name: {
     type: String,
+    unique: true,
     required: true,
     min: 5,
     max: 50

@@ -202,35 +202,48 @@ function Profile() {
             </div>
           </section>
         )}
-             
-             <section className="px-20 my-10">
-  <h2 className="text-2xl font-semibold mb-4">All Consumer Requests</h2>
+{appState.isFarmer() && (
+  <section className="px-20 my-10">
+    <h2 className="text-2xl font-semibold mb-4">Consumer Requests Matching Your Items</h2>
 
-  {notificationsData.length > 0 ? (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {notificationsData.map((note, i) => (
-        <div
-          key={i}
-          className="border p-4 rounded-lg shadow bg-white hover:shadow-lg transition-all"
-        >
-          <h3 className="text-lg font-bold">{note.itemName}</h3>
-          <p className="text-sm text-gray-700">Category: {note.category}</p>
-          <p className="text-sm text-gray-500">Requested by: {note.userId}</p>
-          <p className="text-xs text-gray-400">
-            {new Date(note.date).toLocaleString()}
-          </p>
-          <button className="mt-2 bg-green-600 text-white px-4 py-1 rounded-lg hover:bg-green-700 transition">
-            Add
-          </button>
-        </div>
-      ))}
-    </div>
-  ) : (
-    <div className="text-gray-600 text-md font-medium border border-gray-300 rounded-md p-6 bg-gray-100 shadow">
-      No consumer requests available.
-    </div>
-  )}
-</section>
+    {user?.items && notificationsData.length > 0 ? (
+      <>
+        {notificationsData.filter((note) =>
+          user.items.includes(note.itemName)
+        ).length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {notificationsData
+              .filter((note) => user.items.includes(note.itemName))
+              .map((note, i) => (
+                <div
+                  key={i}
+                  className="border p-4 rounded-lg shadow bg-white hover:shadow-lg transition-all"
+                >
+                  <h3 className="text-lg font-bold">{note.itemName}</h3>
+                  <p className="text-sm text-gray-700">Category: {note.category}</p>
+                  <p className="text-sm text-gray-500">Requested by: {note.userName}</p>
+                  <p className="text-xs text-gray-400">
+                    {new Date(note.date).toLocaleString()}
+                  </p>
+                  <button className="mt-2 bg-green-600 text-white px-4 py-1 rounded-lg hover:bg-green-700 transition">
+                    Add
+                  </button>
+                </div>
+              ))}
+          </div>
+        ) : (
+          <div className="text-gray-600 text-md font-medium border border-gray-300 rounded-md p-6 bg-gray-100 shadow">
+            No matching consumer requests for your items.
+          </div>
+        )}
+      </>
+    ) : (
+      <div className="text-gray-600 text-md font-medium border border-gray-300 rounded-md p-6 bg-gray-100 shadow">
+        No consumer requests available.
+      </div>
+    )}
+  </section>
+)}
 
       </main>
     </>

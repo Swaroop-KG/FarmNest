@@ -14,6 +14,7 @@ router.post('/', async (req, res) => {
       itemName,
       category,
       userName,
+      
       date: new Date() // 👈 This ensures the current date is saved
     });
 
@@ -25,13 +26,12 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Server error. Could not send request.' });
   }
 });
-router.get('/', async (req, res) => {
+router.get('/farmer-request', async (req, res) => {
   try {
-    const notifications = await Notification.find();
-    res.status(200).json(notifications);
-  } catch (err) {
-    console.error('Error fetching notifications:', err);
-    res.status(500).json({ message: 'Server error. Could not fetch notifications.' });
+    const requests = await Notification.find({}); // fetch all consumer requests
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch consumer requests' });
   }
 });
 

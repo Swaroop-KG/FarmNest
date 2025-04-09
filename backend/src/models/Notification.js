@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const NotificationSchema = new mongoose.Schema({
   farmerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Farmer' }, // optional
-  message: String, // optional
+   // optional
   itemName: String,
   category: String,
   userName: String,

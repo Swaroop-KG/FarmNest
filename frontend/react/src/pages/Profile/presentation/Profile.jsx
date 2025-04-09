@@ -47,6 +47,8 @@ function Profile() {
       return res.data;
     }
   });
+  console.log(notificationsData);
+
   if (isLoading) {
     return (
       <main className="min-h-[100vh]">
@@ -219,9 +221,12 @@ function Profile() {
                   key={i}
                   className="border p-4 rounded-lg shadow bg-white hover:shadow-lg transition-all"
                 >
-                  <h3 className="text-lg font-bold">{note.itemName}</h3>
+                 // console.log('Farmer items:', user.items);
+                 <h3 className="text-lg font-bold">{note.itemName}</h3>
+
                   <p className="text-sm text-gray-700">Category: {note.category}</p>
                   <p className="text-sm text-gray-500">Requested by: {note.userName}</p>
+
                   <p className="text-xs text-gray-400">
                     {new Date(note.date).toLocaleString()}
                   </p>

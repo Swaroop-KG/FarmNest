@@ -13,6 +13,9 @@ import male from '../../../assets/icons/male.svg';
 import './pattern.css';
 import { getUser } from '../application/profile';
 import getNotifications from '../application/notification';
+import { useMutation } from '@tanstack/react-query';
+import  deleteNotification from '../application/delete'; // Create these functions
+import  sendCustomerMessage from '../application/send';
 
 function Profile() {
   const fileInputRef = useRef(null);
@@ -43,6 +46,28 @@ function Profile() {
     queryFn: getNotifications,
     enabled: appState.isFarmer(), // ✅ Hook is always called
   });
+  
+const deleteNotificationMutation = useMutation({
+  mutationFn: deleteNotification,
+  onSuccess: () => {
+    queryClient.invalidateQueries(['notifications']);
+  }
+});
+
+const handleAddItem = (note) => {
+  // Send message to customer
+  sendCustomerMessage({
+    userId: note.userId,
+    message: `✅ Your requested item "${note.itemName}" has been added.`,
+    date: new Date().toISOString(),
+  });
+
+  // Delete the notification
+  deleteNotificationMutation.mutate(note._id);
+
+  // Redirect to AddItem with item data
+  navigate('/add', { state: { itemName: note.itemName, category: note.category } });
+};
 
   useEffect(() => {
     if (!isLoading && user?._id === undefined) {
@@ -208,20 +233,20 @@ function Profile() {
                       {new Date(note.date).toLocaleString()}
                     </p>
                     <button
-                      className="mt-2 text-green-700 hover:underline"
-                      onClick={() => {
-                        alert(`You can now add "${note.itemName}" to your items`);
-                      }}
-                    >
-                      ➕ Add to Items
-                    </button>
+                     className="mt-2 text-green-700 hover:underline"
+                           onClick={() => handleAddItem(note)}
+                      > 
+                       ➕ Add to Items
+                      </button>
                   </div>
                 ))}
               </div>
             )}
           </section>
+          
         </>
       )}
+       
     </main>
   );
 }

@@ -2,6 +2,7 @@ import axios from 'axios';
 import appState from '../../../data/AppState';
 import { toast } from 'react-toastify';
 import { handleUpload } from '../../AddItem/application/functions';
+// import { useQuery } from '@tanstack/react-query';
 
 /**
  * Makes request to backend to update the user's profile
@@ -67,3 +68,17 @@ export async function getUser(navigate) {
   appState.logOutUser();
   throw Error('User not found');
 }
+
+
+// const {
+//   data: notifications,
+//   isLoading: loadingNotifications,
+//   isError: errorNotifications
+// } = useQuery({
+//   queryKey: ['notifications'],
+//   queryFn: async () => {
+//     const res = await fetch('http://localhost:3000/api/farmer-request');
+//     if (!res.ok) throw new Error('Failed to fetch notifications');
+//     return res.json();
+//   },
+// });

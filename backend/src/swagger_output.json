@@ -615,9 +615,7 @@
             "description": "Internal Server Error"
           }
         }
-      }
-    },
-    "/api/farmer-request/farmer-request": {
+      },
       "get": {
         "description": "",
         "responses": {

@@ -26,13 +26,19 @@ router.post('/', async (req, res) => {
     res.status(500).json({ message: 'Server error. Could not send request.' });
   }
 });
-router.get('/farmer-request', async (req, res) => {
+
+
+
+router.get('/', async (req, res) => {
   try {
-    const requests = await Notification.find({}); // fetch all consumer requests
-    res.status(200).json(requests);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch consumer requests' });
+    const notifications = await Notification.find().sort({ date: -1 }); // recent first
+    res.json(notifications);
+  } catch (err) {
+    console.error('Error fetching notifications:', err);
+    res.status(500).json({ message: 'Failed to fetch notifications.' });
   }
 });
+
+
 
 module.exports = router;

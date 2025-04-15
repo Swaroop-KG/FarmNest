@@ -19,6 +19,10 @@ const Profile = lazy(() => import('./pages/Profile/presentation/Profile'));
 const CartPage = lazy(() => import('./pages/Cart/presentation/Cart'));
 const AddItem = lazy(() => import('./pages/AddItem/presentation/AddItem'));
 const SignUp = lazy(() => import('./pages/Auth/presentation/SignUp'));
+const VocalForLocal = lazy(() => import('./pages/Landing/presentation/VocalForLocal'));
+const SupportLocalFarmers = lazy(() => import('./pages/Landing/presentation/SupportLocalFarmers'));
+const NaturalAndOrganic = lazy(() => import('./pages/Landing/presentation/NaturalAndOrganic'));
+
 
 const routes = createBrowserRouter([
   {
@@ -88,7 +92,21 @@ const routes = createBrowserRouter([
       {
         path: '/add',
         element: <AddItem />
+      },
+      {
+        path: '/vocal-for-local',
+        element: <VocalForLocal />
+      },
+      {
+        path: '/support-local-farmers',
+        element: <SupportLocalFarmers />
+      },
+      {
+        path: '/natural-and-organic',
+        element: <NaturalAndOrganic />
       }
+      
+      
     ]
   }
 ]);

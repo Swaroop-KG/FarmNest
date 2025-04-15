@@ -69,7 +69,7 @@ function About() {
         <div className=" max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 relative">
           <div className="text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-8 relative ">
             <h1 className="mb-10"> Supporting</h1>
-            आत्मनिर्भर भारत
+            
           </div>
         </div>
       </section>

@@ -10,6 +10,9 @@ import { getFourItems } from '../../shop/application/shop';
 import exploreImage from '../../../assets/explore.webp';
 import { useQuery } from '@tanstack/react-query';
 
+
+
+
 function Home() {
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -124,15 +127,22 @@ function TopSection() {
 }
 
 function OurMottoSection() {
+  const navigate = useNavigate();
+
+  const pathMap = {
+    'Vocal for Local': '/vocal-for-local',
+    'Support Local Farmers': '/support-local-farmers',
+    'Natural and Organic': '/natural-and-organic'
+  };
+
   return (
     <motion.section
       transition={{ duration: 1.25 }}
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
       viewport={{ once: true }}
-      className=""
     >
-      <div className=" my-2 md:my-10 mx-2 md:mx-5 p-2 md:p-10 border-dotted border-[2px] border-slate-200">
+      <div className="my-2 md:my-10 mx-2 md:mx-5 p-2 md:p-10 border-dotted border-[2px] border-slate-200">
         <h1 className="pt-4 text-4xl font-bold text-center">Our Motto</h1>
         <div className="flex flex-col md:flex-row lg:flex-row p-3 md:p-8 gap-2 md:gap-10 lg:gap-10">
           {data.map((e) => {
@@ -141,13 +151,13 @@ function OurMottoSection() {
                 initial={{ scale: 1 }}
                 whileHover={{ scale: 1.1 }}
                 key={e.name}
-                className="group flex flex-row  flex-1 border-[2px] border-slate-200 p-[8px] rounded-lg text-center mb-1  hover:bg-green-500 hover:text-white hover:border-white hover:border-opacity-20"
+                className="group flex flex-row flex-1 border-[2px] border-slate-200 p-[8px] rounded-lg text-center mb-1 hover:bg-green-500 hover:text-white hover:border-white hover:border-opacity-20"
+                onClick={() => navigate(pathMap[e.name])}
               >
-                <div className="flex flex-1 border-dashed  justify-center items-center border-[2px] border-slate-200 px-3 py-2 rounded-lg hover:border-white hover:border-opacity-30">
+                <div className="flex flex-1 border-dashed justify-center items-center border-[2px] border-slate-200 px-3 py-2 rounded-lg hover:border-white hover:border-opacity-30">
                   <div className="text-3xl pr-2 text-green-400 group-hover:text-white">
                     {e.icon}
                   </div>
-
                   <p className="text-lg">{e.name}</p>
                 </div>
               </motion.div>
@@ -202,7 +212,8 @@ function ExploreProducts() {
             whileInView={{ x: 0, opacity: 1 }}
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-5 h-full"
-          >
+            
+         >
             {products.map((e, i) => {
               return (
                 <div key={i} className="flex flex-col items-center justify-center h-full">

@@ -17,3 +17,12 @@ export default async function getNotifications() {
   
     return await res.json();
   }
+  export const updateNotificationStatus = async (id, status) => {
+    try {
+      const res = await axios.patch(`/api/notifications/${id}`, { status });
+      return res.data;
+    } catch (err) {
+      console.error('Failed to update notification:', err);
+      throw err;
+    }
+  };

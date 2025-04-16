@@ -13,8 +13,7 @@ import male from '../../../assets/icons/male.svg';
 import './pattern.css';
 import { getUser } from '../application/profile';
 import getNotifications from '../application/notification';
-
-
+import { updateNotificationStatus } from '../application/notification';
 
 function Profile() {
   const fileInputRef = useRef(null);
@@ -53,10 +52,7 @@ function Profile() {
   });
 
   const handleAddItem = (note) => {
-    
-
     updateNotificationMutation.mutate({ id: note._id, status: 'added' });
-
     navigate('/add', {
       state: { itemName: note.itemName, category: note.category }
     });
@@ -94,100 +90,96 @@ function Profile() {
     }
   };
 
+  // Match requests only related to farmer's items
+  const matchedNotifications = notifications?.filter(note => {
+    const match = user?.items?.some(item => item.name.toLowerCase() === note.itemName.toLowerCase());
+    return !match && note.status !== 'added';
+  });
+
   return (
     <main className="min-h-[100vh]">
-    <div
-      className={`mt-[8vh] h-[20vh] w-full ${user?.pattern ? user?.pattern : pattern}`}
-    ></div>
-    <div className="absolute top-[20vh] left-1/2 -translate-x-1/2 bg-white rounded-full p-3 shadow-md">
-      <img className="h-[100px] w-[100px]" src={male} alt="" />
-    </div>
-    {user && <UpdateModal user={user} />}
-    <div className="flex justify-end right-10">
-      <div className="dropdown md:dropdown-left  ">
-        <label tabIndex={0} className="btn btn-circle btn-ghost btn-md m-4">
-          <Settings />
-        </label>
-        <ul
-          tabIndex={0}
-          className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-        >
-          <li
-            onClick={() => {
-              // show modal and then refresh page
-              const modal = document.getElementById('my_modal_1');
-              const handleClose = () => {
-                if (modal.returnValue === '1') {
-                  // location.reload();
-                  modal.removeEventListener('close', handleClose);
-                }
-              };
-              modal.addEventListener('close', handleClose);
-              modal.showModal();
-            }}
-          >
-            <a>Edit Details</a>
-          </li>
-          <li>
-            <a
-              onClick={() => {
-                // Switch between patterns list items
-                let index = patterns.indexOf(pattern);
-                index = (index + 1) % patterns.length;
-                setPattern(patterns[index]);
-                user.pattern = patterns[index];
-                appState.setUserData(user);
-              }}
-            >
-              Change Pattern
-            </a>
-          </li>
-          <li>
-            <a
-              onClick={() => {
-                appState.logOutUser();
-                queryClient.removeQueries(['profile']);
-                queryClient.removeQueries(['cart']);
-                queryClient.removeQueries(['explore']);
-                queryClient.removeQueries(['items']);
-
-                navigate('/auth');
-              }}
-            >
-              Logout
-            </a>
-          </li>
-        </ul>
+      <div
+        className={`mt-[8vh] h-[20vh] w-full ${user?.pattern ? user?.pattern : pattern}`}
+      ></div>
+      <div className="absolute top-[20vh] left-1/2 -translate-x-1/2 bg-white rounded-full p-3 shadow-md">
+        <img className="h-[100px] w-[100px]" src={male} alt="" />
       </div>
-    </div>
-
-    <section className="flex flex-col items-center">
-      {user._id !== undefined ? (
-        <>
-          <div className="flex flex-row items-center gap-2">
-            <h1 className="text-3xl font-bold">{user.name}</h1>
-            <div className="badge badge-accent text-white p-3">
-              {user.userType === undefined ? '' : user.userType.toUpperCase()}
-            </div>
-          </div>
-          <h6 className="text-slate-700">{user.email}</h6>
-          {user.phone && <h6>{`+91 ${user.phone}`}</h6>}
-        </>
-      ) : (
-        <>
-          <h1>Currently not logged in</h1>
-          <button
-            onClick={async () => {
-              navigate('/auth');
-            }}
-            className="bg-lightColor  rounded-lg text-white font-semibold text-md  py-2 px-10 mt-5"
+      {user && <UpdateModal user={user} />}
+      <div className="flex justify-end right-10">
+        <div className="dropdown md:dropdown-left">
+          <label tabIndex={0} className="btn btn-circle btn-ghost btn-md m-4">
+            <Settings />
+          </label>
+          <ul
+            tabIndex={0}
+            className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
           >
-            Login
-          </button>
-        </>
-      )}
-    </section>
-      
+            <li
+              onClick={() => {
+                const modal = document.getElementById('my_modal_1');
+                const handleClose = () => {
+                  if (modal.returnValue === '1') {
+                    modal.removeEventListener('close', handleClose);
+                  }
+                };
+                modal.addEventListener('close', handleClose);
+                modal.showModal();
+              }}
+            >
+              <a>Edit Details</a>
+            </li>
+            <li>
+              <a
+                onClick={() => {
+                  let index = patterns.indexOf(pattern);
+                  index = (index + 1) % patterns.length;
+                  setPattern(patterns[index]);
+                  user.pattern = patterns[index];
+                  appState.setUserData(user);
+                }}
+              >
+                Change Pattern
+              </a>
+            </li>
+            <li>
+              <a
+                onClick={() => {
+                  appState.logOutUser();
+                  queryClient.removeQueries();
+                  navigate('/auth');
+                }}
+              >
+                Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <section className="flex flex-col items-center">
+        {user._id !== undefined ? (
+          <>
+            <div className="flex flex-row items-center gap-2">
+              <h1 className="text-3xl font-bold">{user.name}</h1>
+              <div className="badge badge-accent text-white p-3">
+                {user.userType?.toUpperCase()}
+              </div>
+            </div>
+            <h6 className="text-slate-700">{user.email}</h6>
+            {user.phone && <h6>{`+91 ${user.phone}`}</h6>}
+          </>
+        ) : (
+          <>
+            <h1>Currently not logged in</h1>
+            <button
+              onClick={() => navigate('/auth')}
+              className="bg-lightColor rounded-lg text-white font-semibold text-md py-2 px-10 mt-5"
+            >
+              Login
+            </button>
+          </>
+        )}
+      </section>
 
       {/* Farmer-only section */}
       {appState.isFarmer() && (
@@ -220,36 +212,33 @@ function Profile() {
 
           <section className="mt-[5vh] mb-[10vh] px-[10vw]">
             <h2 className="text-2xl font-bold mb-4">📬 Requests from Consumers</h2>
-
             {loadingNotifications ? (
               <Loading />
             ) : errorNotifications ? (
               <QueryError error={notificationsError} />
-            ) : notifications?.filter(note => note.status !== 'added').length === 0 ? (
+            ) : matchedNotifications.length === 0 ? (
               <p className="text-gray-600">No new requests.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {notifications
-                  .filter(note => note.status !== 'added')
-                  .map((note, idx) => (
-                    <div
-                      key={idx}
-                      className="border p-4 rounded-lg shadow bg-white"
+                {matchedNotifications.map((note, idx) => (
+                  <div
+                    key={idx}
+                    className="border p-4 rounded-lg shadow bg-white"
+                  >
+                    <h3 className="font-semibold text-lg">{note.itemName}</h3>
+                    <p className="text-sm text-gray-700">Category: {note.category}</p>
+                    <p className="text-sm text-gray-700">Requested by: {note.userName}</p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      {new Date(note.date).toLocaleString()}
+                    </p>
+                    <button
+                      className="mt-2 text-green-700 hover:underline"
+                      onClick={() => handleAddItem(note)}
                     >
-                      <h3 className="font-semibold text-lg">{note.itemName}</h3>
-                      <p className="text-sm text-gray-700">Category: {note.category}</p>
-                      <p className="text-sm text-gray-700">Requested by: {note.userName}</p>
-                      <p className="text-xs text-gray-500 mt-2">
-                        {new Date(note.date).toLocaleString()}
-                      </p>
-                      <button
-                        className="mt-2 text-green-700 hover:underline"
-                        onClick={() => handleAddItem(note)}
-                      >
-                        ➕ Add to Items
-                      </button>
-                    </div>
-                  ))}
+                      ➕ Add to Items
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
           </section>

@@ -22,7 +22,7 @@ const SignUp = lazy(() => import('./pages/Auth/presentation/SignUp'));
 const VocalForLocal = lazy(() => import('./pages/Landing/presentation/VocalForLocal'));
 const SupportLocalFarmers = lazy(() => import('./pages/Landing/presentation/SupportLocalFarmers'));
 const NaturalAndOrganic = lazy(() => import('./pages/Landing/presentation/NaturalAndOrganic'));
-
+const User = lazy(()=> import('./pages/Auth/presentation/User'));
 
 const routes = createBrowserRouter([
   {
@@ -33,6 +33,10 @@ const routes = createBrowserRouter([
   {
     path: '/register',
     element: <SignUp />
+  },
+  {
+    path:'/user',
+    element: <User/>
   },
   {
     path: '',

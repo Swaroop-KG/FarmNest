@@ -233,7 +233,7 @@ function Profile() {
                     </p>
                     <button
                       className="mt-2 text-green-700 hover:underline"
-                      onClick={() => handleAddItem(note)}
+                      onClick={() => handleAddItem(note) } 
                     >
                       ➕ Add to Items
                     </button>

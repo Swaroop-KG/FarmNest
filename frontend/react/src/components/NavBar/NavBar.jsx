@@ -46,7 +46,8 @@ function NavBar() {
           <User onClick={() => navigate('/profile')} className="cursor-pointer mx-5 text-xl" />
         </div>
 
-        <CartNotifier />
+        {appState.isCustomer() && <CartNotifier />}
+
 
         <div className="dropdown dropdown-end">
           <label tabIndex={0} className="btn m-1">
@@ -96,7 +97,9 @@ NavBarItem.propTypes = {
 const CartNotifier = () => {
   const navigate = useNavigate();
   const [cartCount, setCartCount] = useState(0);
-  if (!appState.isCustomer()) return;
+
+  
+  if (!appState.isCustomer()) return null;
 
   useEffect(() => {
     console.info('NavBar.jsx: Adding Listener...');
@@ -106,7 +109,6 @@ const CartNotifier = () => {
       console.info('Cart Counter notified: ', count);
       setCartCount(count);
     };
-
     cartEmitter.on('cartUpdate', listener);
 
     return () => {
@@ -116,7 +118,7 @@ const CartNotifier = () => {
   }, []);
 
   return (
-    <div className=" flex mr-5 relative" onClick={() => navigate('/cart')}>
+    <div className="flex mr-5 relative" onClick={() => navigate('/cart')}>
       <ShoppingCart className="cursor-pointer text-xl ml-5" />
       {cartCount > 0 && (
         <span className="animate-bounce bg-red-600 text-white rounded-full w-[17px] h-[17px] text-center text-[12px] absolute right-[-10px] top-[-10px]">

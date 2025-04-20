@@ -36,7 +36,7 @@ function Login() {
       const data = await login(email, password);
       if (data.statusCode === 200) {
         await getCart();
-        navigate('/home');
+        navigate('/user');
       }
     } catch (error) {
       setLoading(false);

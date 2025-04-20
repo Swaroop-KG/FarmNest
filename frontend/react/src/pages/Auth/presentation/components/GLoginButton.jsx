@@ -33,8 +33,9 @@ const GLoginButton = () => {
           },
           true
         );
+       
         await getCart();
-        navigate('/home');
+        navigate('/user');
       }}
       onError={() => {
         console.warn('Login Failed');
